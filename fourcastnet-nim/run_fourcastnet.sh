@@ -70,7 +70,7 @@ echo "Generating input NumPy array (fcn_inputs.npy) via client container..."
 docker run --rm \
   -v "${DATA_DIR}:/work" \
   "${CLIENT_IMAGE}" \
-  python /app/make_input.py /work/fcn_inputs.npy
+  python /opt/nim/make_input.py /work/fcn_inputs.npy
 
 # ---- Call inference ----
 echo "Calling inference..."

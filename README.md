@@ -8,6 +8,7 @@ This repository bundles utilities for querying Earth-2 FourCastNet forecasts and
   - Variables: 2 m temperature (`t2m_C`), total column water vapor (`tcwv_kg_m2`), 10 m wind speed (`ws10m_m_s`), mean sea-level pressure (`msl_hPa`).
   - Supports 3×3 neighborhood summaries (mean/min/max) and arbitrary time requests using nearest or linear interpolation.
 - **`fourcastnet-nim/app.py`** – Gradio UI that uses `gpt-oss-20b` via vLLM to answer environmental questions for a given location.
+- **`fourcastnet-nim/query_nim.py`** – simple `requests`-based example for sending an input array to a local FourCastNet NIM and saving the forecast output.
 - **Offline-friendly Docker build** – dependencies are downloaded in a builder stage and installed from a local wheelhouse so the runtime image needs no internet access.
 
 ## Building
@@ -34,5 +35,5 @@ docker run --rm fourcastnet-client python point_stats.py --lat -33.93 --lon 18.4
 Ensure code changes compile:
 
 ```bash
-python -m py_compile fourcastnet-nim/make_input.py fourcastnet-nim/app.py fourcastnet-nim/point_stats.py
+python -m py_compile fourcastnet-nim/make_input.py fourcastnet-nim/app.py fourcastnet-nim/point_stats.py fourcastnet-nim/query_nim.py
 ```

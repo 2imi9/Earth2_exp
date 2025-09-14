@@ -3,5 +3,3 @@ numpy==2.0.2
 pandas
 xarray
 earth2studio==0.8.1
-gradio==5.45.0
-vllm==0.10.2

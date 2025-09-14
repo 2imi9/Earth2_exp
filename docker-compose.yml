@@ -5,5 +5,3 @@ services:
     image: fourcastnet-client:latest
     env_file:
       - ./fourcastnet-nim/.env
-    ports:
-      - "${PORT:-8000}:7860"

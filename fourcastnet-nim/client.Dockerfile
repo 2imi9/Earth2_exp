@@ -11,10 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Stage 2: runtime image that installs from local wheelhouse
 FROM python:3.11-slim
-WORKDIR /app
+WORKDIR /opt/nim
 COPY --from=builder /wheelhouse /wheelhouse
-RUN python -m venv /app/.venv \
-    && /app/.venv/bin/pip install --no-index --find-links=/wheelhouse -r /wheelhouse/requirements.txt
-COPY make_input.py point_stats.py app.py /app/
-ENV PATH="/app/.venv/bin:$PATH"
-CMD ["python", "/app/make_input.py", "/work/fcn_inputs.npy"]
+RUN python -m venv /opt/nim/.venv \
+    && /opt/nim/.venv/bin/pip install --no-index --find-links=/wheelhouse -r /wheelhouse/requirements.txt
+COPY *.py /opt/nim/
+ENV PATH="/opt/nim/.venv/bin:$PATH"
+CMD ["python", "/opt/nim/make_input.py", "/work/fcn_inputs.npy"]

@@ -3,7 +3,10 @@
 This repository bundles utilities for querying Earth-2 FourCastNet forecasts and exposing them through a small Gradio interface backed by vLLM.
 
 ## Features
+
 - **`point_stats.py`** – extract time-series forecasts at any latitude/longitude with optional neighborhood context and temporal interpolation.
+  - Variables: 2 m temperature (`t2m_C`), total column water vapor (`tcwv_kg_m2`), 10 m wind speed (`ws10m_m_s`), mean sea-level pressure (`msl_hPa`).
+  - Supports 3×3 neighborhood summaries (mean/min/max) and arbitrary time requests using nearest or linear interpolation.
 - **`app.py`** – Gradio UI that uses `gpt-oss-20b` via vLLM to answer environmental questions for a given location.
 - **Offline-friendly Docker build** – dependencies are downloaded in a builder stage and installed from a local wheelhouse so the runtime image needs no internet access.
 
@@ -15,7 +18,7 @@ docker build -f client.Dockerfile -t fourcastnet-client .
 ```
 
 ## Running
-To generate FourCastNet inputs or launch the Gradio app, mount any required data and run the container:
+All project scripts are placed in `/opt/nim` inside the image. To generate FourCastNet inputs or launch the Gradio app, mount any required data and run the container:
 
 ```bash
 docker run --rm -p 7860:7860 fourcastnet-client python app.py

@@ -4,7 +4,8 @@ set -euo pipefail
 NIM_IMAGE="nvcr.io/nim/nvidia/fourcastnet:latest"
 CLIENT_IMAGE="fourcastnet-client:latest"
 DATA_DIR="$(pwd)/data"
-PORT=8000
+PORT=8000          # host port for HTTP requests
+NIM_PORT=8003      # port exposed by the NIM container
 
 command -v docker >/dev/null 2>&1 || { echo "docker not found"; exit 1; }
 
@@ -22,9 +23,9 @@ mkdir -p "${DATA_DIR}"
 
 RUN_NAME="fourcastnet-nim"
 docker rm -f "${RUN_NAME}" >/dev/null 2>&1 || true
-docker run -d --name "${RUN_NAME}" \
-  --gpus all --shm-size 4g \
-  -p "${PORT}:8000" \
+docker run -d --rm --name "${RUN_NAME}" \
+  --runtime=nvidia --gpus all --shm-size 4g \
+  -p "${PORT}:${NIM_PORT}" \
   -e NGC_API_KEY \
   "${NIM_IMAGE}"
 

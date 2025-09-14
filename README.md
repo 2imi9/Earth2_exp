@@ -19,7 +19,23 @@ docker build -f fourcastnet-nim/client.Dockerfile -t fourcastnet-client fourcast
 ```
 
 ## Running
-All project scripts are placed in `/opt/nim` inside the image. To generate FourCastNet inputs or launch the Gradio app, mount any required data and run the container:
+You can run the client either with Docker Compose or by invoking the container directly.
+
+### Docker Compose
+1. Create a file at `fourcastnet-nim/.env` containing your NIM API key:
+
+   ```bash
+   echo "NIM_API_KEY=your_key_here" > fourcastnet-nim/.env
+   ```
+
+2. Launch the service (default port `8000` can be overridden via the `PORT` environment variable):
+
+   ```bash
+   docker compose up --build
+   ```
+
+### Manual Docker
+All project scripts are placed in `/opt/nim` inside the image. To generate FourCastNet inputs or launch the Gradio app without Docker Compose, mount any required data and run the container:
 
 ```bash
 docker run --rm -p 7860:7860 fourcastnet-client python app.py

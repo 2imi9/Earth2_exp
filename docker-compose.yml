@@ -2,10 +2,8 @@ services:
   fourcastnet:
     build:
       context: ./fourcastnet-nim
-      dockerfile: client.Dockerfile
     image: fourcastnet-client:latest
     env_file:
       - ./fourcastnet-nim/.env
     ports:
       - "${PORT:-8000}:7860"
-    command: python app.py

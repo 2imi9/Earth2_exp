@@ -20,4 +20,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && /opt/nim/.venv/bin/pip install --no-index --find-links=/wheelhouse -r /wheelhouse/requirements.txt
 COPY *.py /opt/nim/
 ENV PATH="/opt/nim/.venv/bin:$PATH"
-CMD ["python", "/opt/nim/make_input.py", "/work/fcn_inputs.npy"]
+CMD ["python", "/opt/nim/app.py"]

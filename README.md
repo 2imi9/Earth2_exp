@@ -9,13 +9,13 @@ This repository bundles utilities for querying Earth-2 FourCastNet forecasts and
   - Supports 3×3 neighborhood summaries (mean/min/max) and arbitrary time requests using nearest or linear interpolation.
 - **`fourcastnet-nim/app.py`** – Gradio UI that uses `gpt-oss-20b` via vLLM to answer environmental questions for a given location.
 - **`fourcastnet-nim/query_nim.py`** – simple `requests`-based example for sending an input array to a local FourCastNet NIM and saving the forecast output.
-- **Offline-friendly Docker build** – dependencies are downloaded in a builder stage and installed from a local wheelhouse so the runtime image needs no internet access.
+- **Manual-friendly Docker setup** – the image installs required system and Python packages and stays idle so you can run any script manually.
 
 ## Building
-The provided `fourcastnet-nim/client.Dockerfile` performs a multi-stage build. The first stage downloads the Python wheels using internet access, while the second stage installs them offline.
+The `fourcastnet-nim/Dockerfile` installs all dependencies on top of a lightweight Python base image. Build it with:
 
 ```bash
-docker build -f fourcastnet-nim/client.Dockerfile -t fourcastnet-client fourcastnet-nim
+docker build -t fourcastnet-client fourcastnet-nim
 ```
 
 ## Running
@@ -28,10 +28,16 @@ You can run the client either with Docker Compose or by invoking the container d
    echo "NIM_API_KEY=your_key_here" > fourcastnet-nim/.env
    ```
 
-2. Launch the service (default port `8000` can be overridden via the `PORT` environment variable):
+2. Build and start the container (default port `8000` can be overridden via the `PORT` environment variable):
 
    ```bash
-   docker compose up --build
+   docker compose up --build -d
+   ```
+
+3. Run whatever script you need inside the container, for example the Gradio app:
+
+   ```bash
+   docker compose exec fourcastnet python app.py
    ```
 
 ### Manual Docker

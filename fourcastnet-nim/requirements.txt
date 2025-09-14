@@ -1,4 +1,7 @@
+# Python dependencies for the FourCastNet demo client
 numpy==2.2.6
+pandas
+xarray
 earth2studio==0.8.1
 gradio==5.45.0
 vllm==0.10.2

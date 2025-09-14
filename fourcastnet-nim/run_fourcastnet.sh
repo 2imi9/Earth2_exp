@@ -63,7 +63,7 @@ done
 
 # ---- Build client image (generates input array) ----
 echo "Building client image: ${CLIENT_IMAGE}"
-docker build -t "${CLIENT_IMAGE}" -f Dockerfile.client .
+docker build -t "${CLIENT_IMAGE}" -f client.Dockerfile .
 
 # ---- Generate input array with Earth2Studio ----
 echo "Generating input NumPy array (fcn_inputs.npy) via client container..."

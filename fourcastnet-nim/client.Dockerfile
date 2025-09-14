@@ -9,13 +9,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Python deps
 # earth2studio pulls xarray, numpy, etc.
 # If wheels change, pip may compile—build-essential covers that.
+# Core Python deps
 RUN pip install --no-cache-dir \
     numpy \
-    earth2studio
+    earth2studio \
+    gradio \
+    vllm
 
 # App code
 WORKDIR /app
-COPY make_input.py /app/make_input.py
+# Include utilities needed at runtime
+COPY make_input.py point_stats.py app.py /app/
 
 # Default command (overridden in script)
 CMD ["python", "/app/make_input.py", "/work/fcn_inputs.npy"]

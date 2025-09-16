@@ -1,7 +1,39 @@
+version: "3.8"
+
 services:
-  fourcastnet:
-    build:
-      context: ./fourcastnet-nim
-    image: fourcastnet-client:latest
-    env_file:
-      - ./fourcastnet-nim/.env
+  mcp_server:
+    build: .
+    env_file: .env
+    ports:
+      - "5000:5000"
+    depends_on:
+      earth_2_fourcastnet:
+        condition: service_healthy
+    networks:
+      - mcp_net
+    deploy:
+      restart_policy:
+        condition: on-failure
+    security_opt:
+      - no-new-privileges:true
+
+  earth_2_fourcastnet:
+    image: your_nvidia_fourcastnet_image:latest
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - INTERNAL_API_TOKEN=${INTERNAL_API_TOKEN}
+    networks:
+      - mcp_net
+    deploy:
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  mcp_net:
+    driver: bridge

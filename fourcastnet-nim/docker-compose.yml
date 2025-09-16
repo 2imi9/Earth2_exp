@@ -1,0 +1,7 @@
+services:
+  fourcastnet:
+    build:
+      context: .
+    image: fourcastnet-client:latest
+    env_file:
+      - ./.env

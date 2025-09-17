@@ -17,10 +17,19 @@ CHANNELS: Iterable[str] = tuple(VARIABLES)
 DEFAULT_INPUT_TIME = datetime(2023, 1, 1, tzinfo=timezone.utc)
 
 
+def _normalize_time(value: datetime) -> datetime:
+    """Return a timezone-naive UTC datetime compatible with ARCO queries."""
+
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(timezone.utc).replace(tzinfo=None)
+
+
 def generate_input_array(input_time: datetime = DEFAULT_INPUT_TIME) -> np.ndarray:
     """Return a 73×721×1440 array wrapped in a batch dimension expected by the NIM."""
     ds = ARCO()
-    da = ds(time=input_time, variable=VARIABLES)
+    da = ds(time=_normalize_time(input_time), variable=VARIABLES)
+
     array = da.to_numpy().astype("float32", copy=False)
     if array.ndim != 3:
         raise ValueError(

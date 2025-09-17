@@ -29,8 +29,13 @@ def generate_input_array(input_time: datetime = DEFAULT_INPUT_TIME) -> np.ndarra
     """Return a 73×721×1440 array wrapped in a batch dimension expected by the NIM."""
     ds = ARCO()
     da = ds(time=_normalize_time(input_time), variable=VARIABLES)
-
     array = da.to_numpy().astype("float32", copy=False)
+    if array.ndim == 4 and array.shape[0] == 1:
+        # ARCO occasionally preserves a singleton time dimension even when a
+        # specific timestamp is requested.  Drop it so the downstream tooling
+        # always receives the expected (variable, lat, lon) layout.
+        array = array[0]
+
     if array.ndim != 3:
         raise ValueError(
             f"Expected a (variable, lat, lon) array from ARCO; received shape {array.shape}."

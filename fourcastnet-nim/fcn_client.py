@@ -35,6 +35,7 @@ def generate_input_array(input_time: datetime = DEFAULT_INPUT_TIME) -> np.ndarra
         # specific timestamp is requested.  Drop it so the downstream tooling
         # always receives the expected (variable, lat, lon) layout.
         array = array[0]
+
     if array.ndim != 3:
         raise ValueError(
             f"Expected a (variable, lat, lon) array from ARCO; received shape {array.shape}."

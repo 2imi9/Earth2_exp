@@ -6,6 +6,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 from typing import Tuple, Optional
 
+from fcn_client import CHANNELS
+
 # ---- CONFIG you can change ----
 INPUT_TIME_ISO = "2023-01-01T00:00:00Z"   # must match what you used in the /v1/infer call
 STEP_HOURS = 6                             # FourCastNet NIM uses 6h steps by default
@@ -28,7 +30,6 @@ def _load_dataset() -> xr.Dataset:
     times_py = [t0 + timedelta(hours=STEP_HOURS * i) for i in range(len(steps))]
     times = np.array([np.datetime64(int(t.timestamp()), "s") for t in times_py])
 
-    from earth2studio.models.px.sfno import VARIABLES
     lat, lon = _grid_lat_lon()
 
     norm_arrays = []
@@ -62,7 +63,7 @@ def _load_dataset() -> xr.Dataset:
 
     ds = xr.Dataset(
         {"fcn": (("time", "variable", "lat", "lon"), stack)},
-        coords={"time": times, "variable": VARIABLES, "lat": lat, "lon": lon},
+        coords={"time": times, "variable": CHANNELS, "lat": lat, "lon": lon},
         attrs={"description": "FourCastNet forecast"}
     )
     return ds

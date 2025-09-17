@@ -5,7 +5,14 @@ import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fcn_client import DEFAULT_INPUT_TIME, NimConfig, run_inference
+import sys
+
+from fcn_client import (
+    DEFAULT_INPUT_TIME,
+    NimConfig,
+    NimConnectionError,
+    run_inference,
+)
 
 
 def parse_time(value: str | None) -> datetime:
@@ -56,13 +63,17 @@ def main() -> None:
 
     config = NimConfig(base_url=args.base_url, api_key=args.api_key)
     input_time = parse_time(args.input_time)
-    output = run_inference(
-        config=config,
-        input_path=Path(args.input),
-        input_time=input_time,
-        simulation_length=args.simulation_length,
-        output_tar=Path(args.output),
-    )
+    try:
+        output = run_inference(
+            config=config,
+            input_path=Path(args.input),
+            input_time=input_time,
+            simulation_length=args.simulation_length,
+            output_tar=Path(args.output),
+        )
+    except NimConnectionError as exc:
+        print(exc, file=sys.stderr)
+        raise SystemExit(1) from None
     print(
         "Saved forecast to",
         output,

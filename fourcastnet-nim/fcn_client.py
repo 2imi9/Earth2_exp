@@ -8,6 +8,7 @@ from typing import Iterable, Optional
 
 import numpy as np
 import requests
+from requests import RequestException
 
 from earth2studio.data import ARCO
 from earth2studio.models.px.sfno import VARIABLES
@@ -65,11 +66,29 @@ class NimConfig:
         return headers
 
 
+class NimConnectionError(RuntimeError):
+    """Raised when the FourCastNet NIM cannot be reached."""
+
+
+def _raise_connection_error(base_url: str, exc: RequestException) -> None:
+    """Raise a helpful error when the NIM cannot be reached."""
+
+    message = (
+        "Unable to contact the FourCastNet NIM at "
+        f"{base_url}. Ensure the service is running "
+        "and reachable, then re-run the command."
+    )
+    raise NimConnectionError(message) from exc
+
+
 def health_ready(config: NimConfig) -> None:
-    """Raise ``HTTPError`` if the NIM is not ready."""
+    """Raise ``RuntimeError`` if the NIM is not reachable or not ready."""
     url = f"{config.base_url.rstrip('/')}/v1/health/ready"
-    resp = requests.get(url, headers=config.headers(), timeout=30)
-    resp.raise_for_status()
+    try:
+        resp = requests.get(url, headers=config.headers(), timeout=30)
+        resp.raise_for_status()
+    except RequestException as exc:  # pragma: no cover - network failures are environment-dependent
+        _raise_connection_error(config.base_url, exc)
 
 
 def run_inference(
@@ -103,10 +122,13 @@ def run_inference(
         "input_time": (None, input_time.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")),
         "simulation_length": (None, str(simulation_length)),
     }
-    with Path(input_path).open("rb") as f_in:
-        files = {"input_array": f_in, **payload}
-        resp = requests.post(url, headers=config.headers(), files=files, timeout=300)
-        resp.raise_for_status()
+    try:
+        with Path(input_path).open("rb") as f_in:
+            files = {"input_array": f_in, **payload}
+            resp = requests.post(url, headers=config.headers(), files=files, timeout=300)
+            resp.raise_for_status()
+    except RequestException as exc:  # pragma: no cover - network failures are environment-dependent
+        _raise_connection_error(config.base_url, exc)
 
     output_path = Path(output_tar)
     output_path.parent.mkdir(parents=True, exist_ok=True)

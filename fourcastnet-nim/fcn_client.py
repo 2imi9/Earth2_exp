@@ -29,6 +29,7 @@ def generate_input_array(input_time: datetime = DEFAULT_INPUT_TIME) -> np.ndarra
     """Return a 73×721×1440 array wrapped in a batch dimension expected by the NIM."""
     ds = ARCO()
     da = ds(time=_normalize_time(input_time), variable=VARIABLES)
+
     array = da.to_numpy().astype("float32", copy=False)
     if array.ndim != 3:
         raise ValueError(

@@ -50,7 +50,7 @@ The utilities are designed to be run from the repository root using the system P
        --output outputs/fcn_forecast.tar
    ```
 
-   The script verifies that the `/v1/health/ready` endpoint is reachable, submits the request, and saves the returned TAR archive.
+   Make sure the FourCastNet NIM you plan to query is already running and reachable from the machine executing the script. By default we assume the service is exposed at `http://localhost:8000`; if it is running elsewhere, change `--base-url` to match. You can quickly verify connectivity with `curl http://localhost:8000/v1/health/ready` (replace the host/port as needed). The script refuses to proceed if it cannot reach the ready endpoint and will exit with an error similar to `Unable to contact the FourCastNet NIM ...`.
 
 3. **Extract the forecasted arrays**
 
@@ -85,8 +85,10 @@ From inside the container, follow the quickstart steps (the project lives in `/w
 
 ```bash
 docker compose up --build -d
-docker compose exec fourcastnet python query_nim.py --input fcn_inputs.npy
+docker compose exec fourcastnet python query_nim.py --base-url https://your-nim.example.com --input fcn_inputs.npy
 ```
+
+The Docker setup only provisions the helper utilities; it does **not** start a FourCastNet NIM. You still need access to an existing deployment (for example, a managed Earth-2 instance) and must ensure the host specified via `--base-url` is reachable from inside the container.
 
 ## Development checks
 

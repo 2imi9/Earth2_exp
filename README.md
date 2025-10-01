@@ -39,7 +39,22 @@ The utilities are designed to be run from the repository root using the system P
 
    This command samples the ARCO dataset for the requested analysis time and writes a batchified `(1, 73, 721, 1440)` tensor that FourCastNet expects.
 
-2. **Send the forecast request**
+2. **Start (or connect to) the FourCastNet NIM**
+
+   If you do not already have access to a managed FourCastNet deployment, you can run the official NVIDIA inference microservice locally with Docker. First export your NGC API key, then start the container (it exposes the service on port `8000` by default):
+
+   ```bash
+   export NGC_API_KEY=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
+
+   docker run --rm --runtime=nvidia --gpus all --shm-size 4g \
+       -p 8000:8000 \
+       -e NGC_API_KEY \
+       nvcr.io/nim/nvidia/fourcastnet:latest
+   ```
+
+   Keep this container running in a separate terminal while you generate inputs and submit forecast jobs. Replace the sample API key with your own credentials when following the commands.
+
+3. **Send the forecast request**
 
    ```bash
    python fourcastnet-nim/query_nim.py \
@@ -52,7 +67,7 @@ The utilities are designed to be run from the repository root using the system P
 
    Make sure the FourCastNet NIM you plan to query is already running and reachable from the machine executing the script. By default we assume the service is exposed at `http://localhost:8000`; if it is running elsewhere, change `--base-url` to match. You can quickly verify connectivity with `curl http://localhost:8000/v1/health/ready` (replace the host/port as needed). The script refuses to proceed if it cannot reach the ready endpoint and will exit with an error similar to `Unable to contact the FourCastNet NIM ...`.
 
-3. **Extract the forecasted arrays**
+4. **Extract the forecasted arrays**
 
    FourCastNet returns its forecast as a TAR archive containing files named `000_000.npy`, `000_001.npy`, etc. Extract them into a working directory before running any diagnostics:
 
@@ -62,7 +77,7 @@ The utilities are designed to be run from the repository root using the system P
    cd outputs/fcn_forecast
    ```
 
-4. **Compute point statistics**
+5. **Compute point statistics**
 
    With the `.npy` files available in the current directory, request a point time-series (e.g., Cape Town):
 
